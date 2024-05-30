@@ -74,7 +74,7 @@ for i in range(len(list(models))):
     print(test_recall)
     
     print('\n--------------------')
-    
+
 
 # Hyper-parameter Tuning
 """
@@ -132,7 +132,10 @@ print(test_recall)
 """
 
 pickle.dump(model, open('emailfab.pkl','wb'))
+pickle.dump(label_encoder, open('label.pkl','wb'))
+
 pickled_model = pickle.load(open('emailfab.pkl','rb'))
+label_model = pickle.load(open('label.pkl','rb'))
 
 
-
+print(model.predict(X_test.iloc[:]))
