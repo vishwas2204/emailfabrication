@@ -3,7 +3,7 @@ import pandas as pd
 import openpyxl
 import matplotlib.pyplot as plt
 import seaborn as sns
-import pickle
+import joblib
 
 
 import warnings
@@ -31,13 +31,31 @@ for x in column_names:
 
 target = df['email']
 
-label_encoder = LabelEncoder()
+# label_encoder = LabelEncoder()
+
+"""
 for col in df.columns:
     if df[col].dtype == 'category':
         df[col] = label_encoder.fit_transform(df[col])
+"""
 
 X = df.drop(['email'], axis=1)
 y = target
+
+label_encoder = {col: LabelEncoder().fit(X[col]) for col in X.columns}
+
+for col, encoder in label_encoder.items():
+    X[col] = encoder.transform(X[col])
+
+"""
+X_encoded = X.copy()
+
+for col in X.columns:
+    X_encoded[col] = label_encoder.fit_transform(X[col])
+"""
+
+# X_encoded = np.array(list(X_encoded)).reshape(-1,1)
+# y = np.array(list(y)).reshape(-1,1)
 
 # Train test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.30, random_state = 1)
@@ -131,11 +149,8 @@ test_recall = recall_score(y_test, y_test_pred, average='weighted')
 print(test_recall)
 """
 
-pickle.dump(model, open('emailfab.pkl','wb'))
-pickle.dump(label_encoder, open('label.pkl','wb'))
-
-pickled_model = pickle.load(open('emailfab.pkl','rb'))
-label_model = pickle.load(open('label.pkl','rb'))
+joblib.dump(model, open('emailfab.pkl','wb'))
+joblib.dump(label_encoder, open('label.pkl','wb'))
 
 
-print(model.predict(X_test.iloc[:]))
+# print(model.predict(X_test.iloc[:]))
